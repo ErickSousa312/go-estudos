@@ -4,33 +4,19 @@
 // go env GOOS GOARCH -- para verificar la plataforma y arquitectura de Go.
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+)
 
 func main() {
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		print("oi")
+		fmt.Fprintf(w, "Welcome to my website!")
+	})
 
-	i := 1
-	for i <= 3 {
-		fmt.Println(i)
-		i = i + 1
-	}
+	fs := http.FileServer(http.Dir("static/"))
+	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
-	for j := 0; j < 3; j++ {
-		fmt.Println(j)
-	}
-
-	for i := range 3 {
-		fmt.Println("range", i)
-	}
-
-	for {
-		fmt.Println("loop")
-		break
-	}
-
-	for n := range 6 {
-		if n%2 == 0 {
-			continue
-		}
-		fmt.Println(n)
-	}
+	http.ListenAndServe(":8000", nil)
 }
